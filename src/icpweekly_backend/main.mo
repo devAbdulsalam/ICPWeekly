@@ -65,6 +65,32 @@ actor {
         };
       };
   };
+  // post functions
+  public func updatePost(title: Text, content : Text, author: Text, scheduled: Time.Time, status: PostStatus  ): async Result.Result<Text, Text> {
+    let _post = posts.get(title);
+      switch(_post) {
+        case(?_post) {
+          posts.put(title, { title = title; author = author; content = content; scheduled = scheduled; status = status});
+          return #ok("Post updated successfully")
+        };
+        case(null) {
+          return #err("Post not found!");
+        };
+      };
+  };
+  // post functions
+  public func deletePost(title: Text ): async Result.Result<Text, Text> {
+    let _post = posts.get(title);
+      switch(_post) {
+        case(?_post) {
+          posts.delete(title);
+          return #ok("Post deleted successfully")
+        };
+        case(null) {
+          return #err("Post not found!");
+        };
+      };
+  };
 
   public func getPosts(): async [Post] {
     return Iter.toArray(posts.vals());
