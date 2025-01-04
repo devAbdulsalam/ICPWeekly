@@ -1,7 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* *{
+	outline: 1px blue solid;
 
+} */
 .debug {
 	border: 1px red solid;
 }

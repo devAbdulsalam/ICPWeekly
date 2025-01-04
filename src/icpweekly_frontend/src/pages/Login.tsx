@@ -54,7 +54,7 @@ export default function Login() {
 				</button>
 				<p className="text-md mt-4 text-center">
 					Don&apos;t have an account?{' '}
-					<Link href="/admin/register" className="text-blue-500">
+					<Link to="/admin/register" className="text-blue-500">
 						Create one
 					</Link>
 				</p>

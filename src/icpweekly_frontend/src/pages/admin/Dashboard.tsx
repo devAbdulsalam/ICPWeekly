@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Newsletters from '@/components/Newsletters';
-import SubscribersList from '@/components/SubscribersList';
+import Newsletters from '../../components/Newsletters';
+import SubscribersList from '../../components/SubscribersList';
 
 type Subscriber = {
 	id: string;
@@ -33,7 +33,7 @@ export default function Dashboard() {
 					<div className="flex flex-col space-y-4">
 						<h3 className="text-2xl font-bold text-blue-500 mb-6">Dashboard</h3>
 						<Link
-							href="#subscribers"
+							to="#subscribers"
 							onClick={handleToggleView}
 							className={`${
 								toggleView ? '' : 'bg-blue-400 text-blue-50'
@@ -42,7 +42,7 @@ export default function Dashboard() {
 							Subscribers
 						</Link>
 						<Link
-							href="#newsletters"
+							to="#newsletters"
 							onClick={handleToggleView}
 							className={`${
 								!toggleView ? '' : 'bg-blue-400 text-blue-50'
@@ -60,13 +60,12 @@ export default function Dashboard() {
 
 			<main className="lg:w-[85%] w-full bg-white h-full p-4">
 				<div className="flex items-center lg:justify-end justify-between mb-3">
-					<Link
-						href="#"
+					<button
 						onClick={handleToggleView}
 						className="lg:hidden block text-blue-700"
 					>
 						{!toggleView ? 'View Newsletters' : 'View Subscribers'}
-					</Link>
+					</button>
 					<button
 						className="bg-red-500 text-white px-5 py-3 rounded-md lg:hidden block"
 						onClick={handleLogout}

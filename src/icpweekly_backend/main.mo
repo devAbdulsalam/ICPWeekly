@@ -4,6 +4,7 @@ import Bool "mo:base/Bool";
 import HashMap "mo:base/HashMap";
 import Iter "mo:base/Iter";
 import Time "mo:base/Time";
+import Nat "mo:base/Nat";
 
 
 actor {
@@ -11,19 +12,24 @@ actor {
     email: Text;
     subscribed: Bool
   };
-
-  type PostStatus = { 
-    draft: Bool;
-    published: Bool;
-    scheduled: Bool;
+  // I'm having trouble defining this type as an enum.
+// enum is messing with me
+// its value is supposed to be be string, but getting object
+  type PostStatus = {
+    #draft;
+    #published;
+    #scheduled;
   };
 
  type Post = {
   title: Text;
   content: Text;
-  scheduled: Time.Time;
+  // figure out how to handle time
+  scheduled: Text;
   author: Text;
-  status: PostStatus;
+  status: Text;
+  updatedAt: Time.Time;
+  createdAt: Time.Time;
 };
   // I want to save the subscribers in stable memory
   let subscribers = HashMap.HashMap<Text, Subscriber>(0, Text.equal, Text.hash);
@@ -53,24 +59,32 @@ actor {
   };
 
   // post functions
-  public func createPost(title: Text, content : Text, author: Text, scheduled: Time.Time, status: PostStatus  ): async Result.Result<(), Text> {
+  public func createPost(title: Text, content : Text, author: Text, scheduled: Text,  status: Text  ): async Result.Result<(), Text> {
     let _post = posts.get(title);
       switch(_post) {
         case(?_post) {
           return #err("Post with title already exist!");
         };
         case(null) {
-          posts.put(title, { title = title; author = author; content = content; scheduled = scheduled; status = status});
+          posts.put(title, { title = title; author = author; content = content; scheduled = scheduled; updatedAt= Time.now(); createdAt = Time.now(); status = status});
           return #ok()
         };
       };
   };
   // post functions
-  public func updatePost(title: Text, content : Text, author: Text, scheduled: Time.Time, status: PostStatus  ): async Result.Result<Text, Text> {
+  public func updatePost(title: Text, content : Text, author: Text, scheduled: Text, status: Text  ): async Result.Result<Text, Text> {
     let _post = posts.get(title);
       switch(_post) {
         case(?_post) {
-          posts.put(title, { title = title; author = author; content = content; scheduled = scheduled; status = status});
+          posts.put(title, { 
+            title = title;
+            author = author; 
+            content = content; 
+            scheduled = scheduled; 
+            status = status;
+            createdAt= _post.createdAt;
+            updatedAt= Time.now()
+          });
           return #ok("Post updated successfully")
         };
         case(null) {

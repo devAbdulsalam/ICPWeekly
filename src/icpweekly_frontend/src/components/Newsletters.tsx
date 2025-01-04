@@ -1,4 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import Subscribed from '../pages/Subscribed';
+
+interface SubscribersData {
+	email: string;
+	Subscribed: boolean;
+}
 
 export default function Newsletters() {
 	const [recipients, setRecipients] = useState<string[]>([]);

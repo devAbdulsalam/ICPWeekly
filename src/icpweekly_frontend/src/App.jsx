@@ -7,19 +7,26 @@ import Register from './pages/admin/Register';
 // import Dashboard from './pages/Dashboard';
 import PublishNewsletter from './pages/admin/PublishNewsletter';
 // import IndexPage from './pages/IndexPage';
-import Index from './pages/Index';
+import Home from './pages/Home';
 import Subscribe from './pages/Subscribe';
+import Subscribed from './pages/Subscribed';
 // import DashboardLayout from './pages/DashboardLayout';
+import Navbar from './components/Navbar';
+import Posts from './pages/Posts';
 function App() {
 	return (
-		<Routes>
-			<Route path="/login" element={<Login />} />
-			{/* <Route path="/" element={<IndexPage />} /> */}
-			<Route path="/index" element={<Index />} />
-			<Route path="/" element={<PublishNewsletter />} />
-			<Route path="/admin/register" element={<Register />} />
-			<Route path="/subscribe" element={<Subscribe />} />
-			{/* <Route path="/" element={<Layout />}>
+		<>
+			<Navbar />
+			<Routes>
+				<Route path="/admin/login" element={<Login />} />
+				{/* <Route path="/" element={<IndexPage />} /> */}
+				<Route path="/" element={<Home />} />
+				<Route path="/subscribe" element={<Subscribe />} />
+				<Route path="/publish" element={<PublishNewsletter />} />
+				<Route path="/admin/register" element={<Register />} />
+				<Route path="/subscribed" element={<Subscribed />} />
+				<Route path="/posts" element={<Posts />} />
+				{/* <Route path="/" element={<Layout />}>
 				<Route path="/login" element={<Login />} />
 				<Route path="/" element={<IndexPage />} />
 				<Route element={<ProtectedRoutes />}>
@@ -28,7 +35,8 @@ function App() {
 					</Route>
 				</Route> <Route path="*" element={<NotFound />} />
 			{/* </Route> */}
-		</Routes>
+			</Routes>
+		</>
 	);
 }
 

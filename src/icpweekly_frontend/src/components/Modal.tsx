@@ -1,7 +1,14 @@
 /* eslint-disable react/prop-types */
 import { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-const Modal = ({ show, children }) => {
+import { ReactNode } from 'react';
+
+interface ModalProps {
+  show: boolean;
+  children: ReactNode;
+}
+
+const Modal = ({ show, children }: ModalProps) => {
 	return (
 		<Transition appear show={show} as={Fragment}>
 			<Dialog as="div" className="relative" onClose={() => {}}>

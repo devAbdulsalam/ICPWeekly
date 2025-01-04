@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { icpweekly_backend } from '../../../../declarations/icpweekly_backend';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import Editor from '../../components/Editor';
 import PreviewModal from '../../components/PreviewModal';
+import toast from 'react-hot-toast';
 // import Preview from '../../components/Preview';
 
 function IndexPage() {
@@ -26,11 +28,48 @@ function IndexPage() {
 
 	const handleSubmit = async () => {
 		if (!content.trim() || !subject.trim()) {
+			toast.error('title and content are required.');
 			return;
 		}
+		// validate date and time to future
+		const currentTime = new Date().toISOString().split('T')[1].split('.')[0];
+		const scheduledTime = new Date(date)
+			.toISOString()
+			.split('T')[1]
+			.split('.')[0];
+		if (currentTime >= scheduledTime) {
+			toast.error('Scheduled date and time must be in the future.');
+			return;
+		}
+
+		setIsShowPreview(true);
 		setLoading(true);
 		try {
-			console.log('Values', { subject, date, status, content });
+			const data: {
+				title: string;
+				date: string;
+				status: string;
+				content: string;
+				author: string;
+				scheduled: string;
+			} = {
+				title: subject,
+				status,
+				content,
+				author: 'admin',
+				scheduled: date,
+				date: new Date(date).toISOString(), // Convert date to ISO string
+			};
+			console.log('Values', data);
+
+			const result = await icpweekly_backend.createPost(
+				data.title,
+				data.content,
+				data.author,
+				data.date,
+				status
+			);
+			console.log('result', result);
 			setLoading(false);
 		} catch (error) {
 			console.error('Error generating content:', error);
@@ -42,7 +81,7 @@ function IndexPage() {
 			<div className="flex flex-col space-y-4 w-full md:max-w-4xl mx-auto p-2">
 				<div>
 					<h2 className="text-2xl font-semibold mt-4 text-center">
-						Draft mail
+						Draft Mail
 					</h2>
 				</div>
 				<div className="mt-3">
@@ -63,46 +102,58 @@ function IndexPage() {
 						className="w-full py-3 px-3 border-gray-600 border-[1px] rounded-md"
 					/>
 				</div>
-				<div className="mt-1">
-					<label htmlFor="date" id="date" className="text-lg font-semibold">
-						Date
-					</label>
-					<input
-						type="datetime"
-						id="date"
-						value={date}
-						onChange={(e) => setDate(e.target.value)}
-						className="w-full py-3 px-3 border-gray-600 border-[1px] rounded-md mb-4"
-					/>
-				</div>
-				{/* <div className="p-2 h-fit debug"> */}
-				<div className=" h-[650px] md:min-h-[600px] relative my-4  ">
-					<Editor content={content} setContent={setContent} />
-				</div>
-				<div className="space-y-4 md:flex justify-between items-center md:mt-10">
-					<div>
-						<button onClick={() => setIsShowPreview(true)}>Preview mail</button>
+
+				<div className="flex gap-2 flex-col md:flex-row items-end justify-between mb-4">
+					<div className="w-full">
+						<label htmlFor="date" id="date" className="text-lg font-semibold">
+							Date
+						</label>
+						<input
+							type="datetime-local"
+							id="date"
+							value={date}
+							onChange={(e) => setDate(e.target.value)}
+							className="w-full py-2 px-3 border-gray-600 border-[1px] rounded-md "
+						/>
 					</div>
-					<div>
+					<div className="w-full">
+						<label htmlFor="date" id="date" className="text-lg font-semibold">
+							Status
+						</label>
 						<select
 							onChange={handleStatusChange}
-							className="w-full md:w-fit bg-transparent border px-2 outline-none flex items-center justify-center space-x-3  py-3 rounded-lg"
+							className="w-full bg-transparent border px-2 outline-none flex items-center justify-center space-x-3  py-3 rounded-lg"
 						>
 							<option value="draft">Draft</option>
 							<option value="publish">Publish</option>
+							<option value="schedule">Schedule</option>
 						</select>
 					</div>
-					<button
-						onClick={handleSubmit}
-						className={`${
-							isDisabled
-								? 'bg-gray-600 text-white'
-								: 'bg-black text-gray-50 cursor-pointer'
-						} flex items-center justify-center space-x-3  py-3 px-10 w-full md:w-fit rounded-lg `}
-						disabled={isDisabled || isLoading}
-					>
-						{isLoading ? 'Submitting...' : 'Submit'}
-					</button>
+				</div>
+				<div className="md:p-2 h-fit flex flex-col">
+					<div className="min-h-[600px] relative my-2">
+						<Editor content={content} setContent={setContent} />
+					</div>
+					<div className=" space-y-2 md:space-y-0 gap-2 sm:flex justify-between items-center">
+						<button
+							onClick={() => setIsShowPreview(true)}
+							className="py-3 px-10 w-full md:w-fit rounded-lg bg-gray-400 text-white hover:bg-gray-500 cursor-pointer"
+						>
+							Preview mail
+						</button>
+
+						<button
+							onClick={handleSubmit}
+							className={`${
+								isDisabled
+									? 'bg-gray-600 text-white'
+									: 'bg-black text-gray-50 cursor-pointer'
+							} flex items-center justify-center space-x-3  py-3 px-10 w-full md:w-fit rounded-lg `}
+							disabled={isDisabled || isLoading}
+						>
+							{isLoading ? 'Submitting...' : 'Submit'}
+						</button>
+					</div>
 				</div>
 			</div>
 			{isShowPreview && (
