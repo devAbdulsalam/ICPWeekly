@@ -1,31 +1,35 @@
-import { useState } from 'react';
-import { icpweekly_backend } from 'declarations/icpweekly_backend';
-
+import { Routes, Route } from 'react-router-dom';
+// import ProtectedRoutes from './hooks/ProtectedRoutes';
+import Login from './pages/Login';
+import Register from './pages/admin/Register';
+// import NotFound from './NotFound';
+// import Layout from './Layout';
+// import Dashboard from './pages/Dashboard';
+import PublishNewsletter from './pages/admin/PublishNewsletter';
+// import IndexPage from './pages/IndexPage';
+import Index from './pages/Index';
+import Subscribe from './pages/Subscribe';
+// import DashboardLayout from './pages/DashboardLayout';
 function App() {
-  const [greeting, setGreeting] = useState('');
-
-  function handleSubmit(event) {
-    event.preventDefault();
-    const name = event.target.elements.name.value;
-    icpweekly_backend.greet(name).then((greeting) => {
-      setGreeting(greeting);
-    });
-    return false;
-  }
-
-  return (
-    <main>
-      <img src="/logo2.svg" alt="DFINITY logo" />
-      <br />
-      <br />
-      <form action="#" onSubmit={handleSubmit}>
-        <label htmlFor="name">Enter your name: &nbsp;</label>
-        <input id="name" alt="Name" type="text" />
-        <button type="submit">Click Me!</button>
-      </form>
-      <section id="greeting">{greeting}</section>
-    </main>
-  );
+	return (
+		<Routes>
+			<Route path="/login" element={<Login />} />
+			{/* <Route path="/" element={<IndexPage />} /> */}
+			<Route path="/index" element={<Index />} />
+			<Route path="/" element={<PublishNewsletter />} />
+			<Route path="/admin/register" element={<Register />} />
+			<Route path="/subscribe" element={<Subscribe />} />
+			{/* <Route path="/" element={<Layout />}>
+				<Route path="/login" element={<Login />} />
+				<Route path="/" element={<IndexPage />} />
+				<Route element={<ProtectedRoutes />}>
+					<Route exact path="/" element={<DashboardLayout />}>
+						<Route path="/dashboard" element={<Dashboard />} />
+					</Route>
+				</Route> <Route path="*" element={<NotFound />} />
+			{/* </Route> */}
+		</Routes>
+	);
 }
 
 export default App;
