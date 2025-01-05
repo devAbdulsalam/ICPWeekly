@@ -1,22 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { icpweekly_backend } from '../../../../declarations/icpweekly_backend';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import Editor from '../../components/Editor';
-import PreviewModal from '../../components/PreviewModal';
 import toast from 'react-hot-toast';
-// import Preview from '../../components/Preview';
+import { useNavigate } from 'react-router-dom';
+import { useAppContext } from '../../context/context';
 
 function IndexPage() {
 	const [content, setContent] = useState<string>('');
 	const [subject, setSubject] = useState<string>('');
 	const [status, setStatus] = useState<string>('draft');
+	const { post, setPost } = useAppContext();
+	const navigate = useNavigate();
 	const [date, setDate] = useState<string>(
 		new Date().toISOString().split('T')[0]
 	); // Format for `type="date"`
 	const [isDisabled, setDisabled] = useState<boolean>(true);
 	const [isLoading, setLoading] = useState<boolean>(false);
-	const [isShowPreview, setIsShowPreview] = useState<boolean>(false);
+
+	useEffect(() => {
+		if (post) {
+			setContent(post.content);
+			setSubject(post.title);
+			setStatus(post.status);
+			setDate(post.scheduled);
+		}
+	}, []);
 
 	useEffect(() => {
 		setDisabled(!content.trim() || !subject.trim());
@@ -28,7 +38,7 @@ function IndexPage() {
 
 	const handleSubmit = async () => {
 		if (!content.trim() || !subject.trim()) {
-			toast.error('title and content are required.');
+			toast.error('Title and content are required.');
 			return;
 		}
 		// validate date and time to future
@@ -37,12 +47,12 @@ function IndexPage() {
 			.toISOString()
 			.split('T')[1]
 			.split('.')[0];
+		console.log('currentTime', currentTime);
+		console.log('scheduledTime', scheduledTime);
 		if (currentTime >= scheduledTime) {
 			toast.error('Scheduled date and time must be in the future.');
 			return;
 		}
-
-		setIsShowPreview(true);
 		setLoading(true);
 		try {
 			const data: {
@@ -60,7 +70,6 @@ function IndexPage() {
 				scheduled: date,
 				date: new Date(date).toISOString(), // Convert date to ISO string
 			};
-			console.log('Values', data);
 
 			const result = await icpweekly_backend.createPost(
 				data.title,
@@ -69,11 +78,27 @@ function IndexPage() {
 				data.date,
 				status
 			);
-			console.log('result', result);
+			console.log(result);
+			setPost(null);
+			navigate(`/posts/${subject}`);
 			setLoading(false);
 		} catch (error) {
 			console.error('Error generating content:', error);
 		}
+	};
+
+	const handlePreview = () => {
+		if (!content.trim() || !subject.trim()) {
+			toast.error('Title and content are required.');
+			return;
+		}
+		setPost({
+			title: subject,
+			content,
+			author: 'admin',
+			scheduled: date || new Date().toISOString,
+		});
+		navigate(`/preview-post`);
 	};
 
 	return (
@@ -81,7 +106,7 @@ function IndexPage() {
 			<div className="flex flex-col space-y-4 w-full md:max-w-4xl mx-auto p-2">
 				<div>
 					<h2 className="text-2xl font-semibold mt-4 text-center">
-						Draft Mail
+						Draft Newsletter
 					</h2>
 				</div>
 				<div className="mt-3">
@@ -136,7 +161,7 @@ function IndexPage() {
 					</div>
 					<div className=" space-y-2 md:space-y-0 gap-2 sm:flex justify-between items-center">
 						<button
-							onClick={() => setIsShowPreview(true)}
+							onClick={handlePreview}
 							className="py-3 px-10 w-full md:w-fit rounded-lg bg-gray-400 text-white hover:bg-gray-500 cursor-pointer"
 						>
 							Preview mail
@@ -156,14 +181,6 @@ function IndexPage() {
 					</div>
 				</div>
 			</div>
-			{isShowPreview && (
-				<PreviewModal
-					content={content}
-					title={subject}
-					isModal={isShowPreview}
-					setIsModal={setIsShowPreview}
-				/>
-			)}
 		</div>
 	);
 }

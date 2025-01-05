@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { icpweekly_backend } from '../../../declarations/icpweekly_backend';
-import Card from '../components/Card';
 import Loader from '../components/Loader';
+import { useNavigate } from 'react-router-dom';
 
 export default function Posts() {
 	const [posts, setPosts] = useState<Array<any>>([]);
 	const [loading, setLoading] = useState<boolean>(false);
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		const fetchResources = async () => {
@@ -20,6 +21,7 @@ export default function Posts() {
 	const handlePreview = (post: any) => {
 		//���� preview post
 		console.log('handlePreview', post);
+		navigate(`/posts/${post.title}`);
 	};
 
 	const getDate = (date: any) => {

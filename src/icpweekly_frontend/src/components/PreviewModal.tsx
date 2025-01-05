@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 // import nodemailer from 'nodemailer';
 // import { render } from '@react-email/components';
+// import Preview from '../pages/Preview';
 import Modal from './Modal';
-import Preview from './Preview';
 
 function PreviewModal({
 	title,
@@ -10,8 +10,8 @@ function PreviewModal({
 	isModal,
 	setIsModal,
 }: {
-	content: string;
 	title: string;
+	content: string;
 	isModal: boolean;
 	setIsModal: (value: boolean) => void;
 }) {
@@ -57,7 +57,7 @@ function PreviewModal({
 			<div className="transform overflow-hidden min-w-[400px] rounded-2xl bg-white text-left align-middle shadow-xl transition-all font-josefin h-full">
 				<div className="flex flex-col space-y-4 w-full md:max-w-4xl mx-auto">
 					<div style={{ marginTop: '20px' }}>
-						<Preview content={content} title={title} />
+						{/* <Preview content={content} title={title} /> */}
 					</div>
 					<div className="flex justify-between w-full">
 						<button className="w-full" onClick={() => setIsModal(false)}>
